@@ -113,7 +113,9 @@ function setup() {
 
   Object.values(inputs).forEach((input) => input.input(handleInput));
 
-  createCanvas(windowWidth, 450);
+  let cnv = createCanvas(windowWidth, 450);
+
+  cnv.mouseOut(() => { recalculate = true });
 }
 
 function addMaterial() {
