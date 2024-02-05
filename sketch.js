@@ -1,4 +1,11 @@
-let inputs = {};
+let inputs = {
+  innerLeafDensity: [],
+  innerLeafThickness: [],
+  cavityDepth: [],
+  outerLeafDensity: [],
+  outerLeafThickness: [],
+};
+
 let innerLeafMass,
   outerLeafMass,
   innerLeafTL,
@@ -22,6 +29,11 @@ function loadSavedInputs() {
       inputs[key].value(savedValue);
     }
   });
+
+  const savedUnitSystem = localStorage.getItem("unitSystem");
+  if (savedUnitSystem !== null) {
+    unitSystem = savedUnitSystem;
+  }
 }
 
 // Save input values to localStorage when inputs change
@@ -29,6 +41,7 @@ function saveInputsToLocalStorage() {
   Object.keys(inputs).forEach((key) => {
     localStorage.setItem(key, inputs[key].value());
   });
+  localStorage.setItem("unitSystem", unitSystem);
 }
 
 function setup() {
@@ -56,6 +69,12 @@ function setup() {
   inputContainer1.child(inputs.innerLeafDensity);
   inputContainer1.child(createElement("label", "Thickness (mm)").id("innerLeafThicknessLabel"));
   inputContainer1.child(inputs.innerLeafThickness);
+
+  // // Create a button to add a new material input
+  // let addButton = createButton("+ Add Material");
+  // addButton.mousePressed(addMaterial);
+  // inputContainer1.child(addButton);
+  
   inputContainer1.child(createDiv("").id("innerLeafMassLabel"));
 
   let inputContainer2 = createDiv("");
@@ -97,12 +116,14 @@ function setup() {
   createCanvas(windowWidth, 450);
 }
 
+function addMaterial() {
+}
+
 function handleInput() {
   // Set recalculate flag to true when inputs change
   recalculate = true;
 
   saveInputsToLocalStorage(); // Save inputs to localStorage
-
 }
 
 function toggleUnits() {
@@ -157,13 +178,13 @@ function windowResized() {
 }
 
 function draw() {
-  clear();
   // Only recalculate when needed
   if (recalculate) {
+    clear();
     calculate();
+    drawGraph();
     recalculate = false;
   }
-  drawGraph();
 }
 
 
@@ -253,6 +274,17 @@ function drawGraph() {
     textAlign(CENTER, CENTER);
     text(`Freq: ${highlightedFrequency} Hz`, mouseX, mouseY - 40);
     text(`TL: ${highlightedTL} dB`, mouseX, mouseY - 20);
+  }
+}
+
+function mouseMoved() {
+  if (
+    mouseX > 0 &&
+    mouseX < width &&
+    mouseY > 0 &&
+    mouseY < height
+  ) {
+    recalculate = true;
   }
 }
 
